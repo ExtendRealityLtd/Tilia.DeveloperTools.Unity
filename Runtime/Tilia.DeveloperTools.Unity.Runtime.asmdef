@@ -1,3 +1,18 @@
-﻿{
-	"name": "Tilia.DeveloperTools.Unity.Runtime"
+{
+    "name": "Tilia.DeveloperTools.Unity.Runtime",
+    "references": [
+        "Zinnia.Runtime"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Malimbe.PropertySerializationAttribute.dll",
+        "Malimbe.XmlDocumentationAttribute.dll",
+        "Malimbe.MemberChangeMethod.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": []
 }
