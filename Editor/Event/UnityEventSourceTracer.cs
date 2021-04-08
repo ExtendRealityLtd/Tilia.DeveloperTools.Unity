@@ -13,13 +13,13 @@
         private const string windowTitle = "UnityEvent Source Tracer";
         private static EditorWindow promptWindow;
         private Vector2 scrollPosition;
-        private Dictionary<Component, List<Component>> cache = new Dictionary<Component, List<Component>>();
+        private Dictionary<Object, List<Object>> cache = new Dictionary<Object, List<Object>>();
         private List<string> selectedComponents = new List<string>();
-        private List<Component> backingSelectedComponents = new List<Component>();
+        private List<Object> backingSelectedComponents = new List<Object>();
         private int selectedComponentIndex;
         private int lastSelectedIndex;
         private GameObject selectedGameObejct;
-        private List<Component> foundCallers = new List<Component>();
+        private List<Object> foundCallers = new List<Object>();
 
         public void OnGUI()
         {
@@ -90,9 +90,9 @@
             selectedGameObejct = Selection.activeGameObject;
         }
 
-        private List<Component> GetAllCallingComponents(Component target)
+        private List<Object> GetAllCallingComponents(Object target)
         {
-            List<Component> results = new List<Component>();
+            List<Object> results = new List<Object>();
             if (cache.ContainsKey(target))
             {
                 foreach (Component source in cache[target])
@@ -122,6 +122,9 @@
 
             List<Component> components = new List<Component>();
             obj.GetComponents(components);
+
+            backingSelectedComponents.Add(obj);
+            selectedComponents.Add(ObjectNames.NicifyVariableName(obj.name));
             foreach (Component component in components)
             {
                 backingSelectedComponents.Add(component);
@@ -195,22 +198,14 @@
             {
                 string methodName = unityEvent.GetPersistentMethodName(i);
                 Object persistentTarget = unityEvent.GetPersistentTarget(i);
-                Component receiver = null;
-                try
-                {
-                    receiver = (Component)persistentTarget;
-                }
-                catch (System.Exception)
-                {
-                }
 
-                if (receiver != null && methodName != null && methodName != "")
+                if (persistentTarget != null && methodName != null && methodName != "")
                 {
-                    if (!cache.ContainsKey(receiver))
+                    if (!cache.ContainsKey(persistentTarget))
                     {
-                        cache.Add(receiver, new List<Component>());
+                        cache.Add(persistentTarget, new List<Object>());
                     }
-                    cache[receiver].Add(caller);
+                    cache[persistentTarget].Add(caller);
                 }
             }
         }
