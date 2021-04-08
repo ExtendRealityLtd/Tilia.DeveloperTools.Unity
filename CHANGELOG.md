@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.0](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/compare/v1.0.6...v1.1.0) (2021-04-08)
+
+#### Features
+
+* **Event:** allow tracing of GameObject in UnityEvent ([4a03c25](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/commit/4a03c25ab80b032b2e60258f5a69148f65bf6abc))
+  > Previously the tracing was only done on components and a GameObejct is not a component but both Component and GameObject both extend Object so now the tracing is done on Object to allow to trace events from a Component being used in a Unity Event or whether the GameObject itself is being modified in a unity event.
+* **Output:** add basic console logging component ([66d5e70](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/commit/66d5e70cc80791406602f96cf377c98f8d30ac1c))
+  > The ConsoleLogger component has a collection of methods for logging common data types to the Unity console window. It will also take an object type and call the `ToString()` method on any object that can print out its own contents.
+* **Prefabs:** add basic scene console ([d9c0808](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/commit/d9c0808f4b7e7020745203aa0250b85c4ac50241))
+  > A scene console prefab has been created that provides a scene GameObject canvas that can display the console logs from the Unity console in various log formats. It also supports basic collapse functionality.
+
 ### [1.0.6](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/compare/v1.0.5...v1.0.6) (2021-04-07)
 
 #### Miscellaneous Chores
