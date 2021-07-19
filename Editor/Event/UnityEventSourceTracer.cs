@@ -124,7 +124,7 @@
             obj.GetComponents(components);
 
             backingSelectedComponents.Add(obj);
-            selectedComponents.Add(ObjectNames.NicifyVariableName(obj.name));
+            selectedComponents.Add(ObjectNames.NicifyVariableName("GameObject (" + obj.name + ")"));
             foreach (Component component in components)
             {
                 backingSelectedComponents.Add(component);
