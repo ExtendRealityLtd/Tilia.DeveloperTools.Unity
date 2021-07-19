@@ -1,5 +1,14 @@
 # Changelog
 
+### [1.1.6](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/compare/v1.1.5...v1.1.6) (2021-07-19)
+
+#### Bug Fixes
+
+* **Event:** prefix GameObject component to prevent overriding ([aff18d8](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/commit/aff18d8bce67ef30d88f8eba1925f94cafc9b6bb))
+  > There was an issue where if the GameObject component name was the same as an actual component on the GameObject then the GameObject would override the component object and only the GameObject would show up in the list.
+  > 
+  > This has been fixed by simply prefixing the GameObject element in the list with the word "GameObect (<actual name>)" to ensure uniqueness.
+
 ### [1.1.5](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/compare/v1.1.4...v1.1.5) (2021-06-24)
 
 #### Miscellaneous Chores
