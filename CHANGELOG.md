@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/compare/v1.1.16...v1.2.0) (2022-03-02)
+
+#### Features
+
+* **package.json:** add information urls to package ([55f3e58](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/commit/55f3e58d1362579dd17d6ac9348bc6caecbd8b84))
+  > The changelog, documentation and license url has been added to the package.json as these are used within the Unity package manager.
+
 ### [1.1.16](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/compare/v1.1.15...v1.1.16) (2022-02-14)
 
 #### Miscellaneous Chores
