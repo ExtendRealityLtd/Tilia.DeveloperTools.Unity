@@ -8,9 +8,29 @@
     using Zinnia.Utility;
 
     [InitializeOnLoad]
-    public class UnityEventSourceTracer : EditorWindow
+    public class UnityEventSourceTracer : EditorWindow, IHasCustomMenu
     {
+        public List<GameObject> selectedHistory = new List<GameObject>();
+
+        private const string windowPath = "Window/Tilia/DeveloperTools/";
         private const string windowTitle = "UnityEvent Source Tracer";
+        private const string titleLabel = "Trace UnityEvent Sources";
+        private const string cacheButtonEmptyText = "B";
+        private const string cacheButtonNotEmptyText = "Reb";
+        private const string cacheButtonText = "uild Cache";
+        private const string noCacheText = "No data cache found, click the `Build Cache` button";
+        private const string componentsPopupLabel = "Available Components";
+        private const string findEventsButton = "Find Source UnityEvents";
+        private const string eventSourcesLabel = "Event Sources";
+        private const string noSourcesFoundText = "No Sources Found";
+        private const string highlightButtonText = "Highlight";
+        private const string highlightButtonTooltip = "Highlight Event Source GameObject";
+        private const string highlightLabelSeperator = " on ";
+        private const string selectionHistoryLabel = "Target History";
+        private const string clearSelectionHistoryButton = "Clear List";
+        private const string noHistoryFoundText = "No Target History Found";
+        private const string gameObjectText = "GameObject";
+
         private static EditorWindow promptWindow;
         private Vector2 scrollPosition;
         private Dictionary<Object, List<Object>> cache = new Dictionary<Object, List<Object>>();
@@ -20,74 +40,168 @@
         private int lastSelectedIndex;
         private GameObject selectedGameObejct;
         private List<Object> foundCallers = new List<Object>();
+        private GUIContent highlightButtonContent = new GUIContent(highlightButtonText, highlightButtonTooltip);
+
+        [System.NonSerialized]
+        private GUIStyle lockButtonStyle;
+        [System.NonSerialized]
+        private bool locked = false;
 
         public void OnGUI()
         {
             using (GUILayout.ScrollViewScope scrollViewScope = new GUILayout.ScrollViewScope(scrollPosition))
             {
                 scrollPosition = scrollViewScope.scrollPosition;
-                GUILayout.Label("Trace UnityEvent Sources", EditorStyles.boldLabel);
 
-                if (GUILayout.Button((cache.Count == 0 ? "B" : "Reb") + "uild Cache"))
-                {
-                    ClearSelectedComponents();
-                    BuildCache();
-                }
-
+                DisplayTitle();
                 EditorHelper.DrawHorizontalLine();
 
                 if (cache.Count > 0)
                 {
                     if (selectedComponents.Count > 0)
                     {
-                        selectedComponentIndex = EditorGUILayout.Popup("Available Components", selectedComponentIndex, selectedComponents.ToArray());
-
-                        if (!selectedComponentIndex.Equals(lastSelectedIndex))
-                        {
-                            foundCallers.Clear();
-                        }
-
-                        EditorGUILayout.BeginHorizontal();
-                        EditorGUILayout.PrefixLabel(" ");
-                        if (GUILayout.Button("Find Source UnityEvents"))
-                        {
-                            foundCallers = GetAllCallingComponents(backingSelectedComponents[selectedComponentIndex]);
-                        }
-                        EditorGUILayout.EndHorizontal();
-
+                        DisplayAvailableComponents();
                         EditorHelper.DrawHorizontalLine();
-
-                        if (foundCallers.Count > 0)
-                        {
-                            GUILayout.Label("Found Sources", EditorStyles.boldLabel);
-                        }
-                        else
-                        {
-                            EditorGUILayout.HelpBox("No Sources Found", MessageType.Info);
-                        }
-
-                        foreach (Component component in foundCallers)
-                        {
-                            if (GUILayout.Button(component.GetType().Name + " on " + component.name))
-                            {
-                                EditorGUIUtility.PingObject(component.gameObject);
-                            }
-                        }
-
-                        lastSelectedIndex = selectedComponentIndex;
+                        DisplayEventSources();
+                        EditorHelper.DrawHorizontalLine();
+                        DisplaySelectionHistory();
                     }
                     else
                     {
                         BuildSelectedComponents();
                     }
                 }
+                else
+                {
+                    EditorGUILayout.HelpBox(noCacheText, MessageType.Info);
+                }
             }
 
-            if (selectedGameObejct == null || !selectedGameObejct.Equals(Selection.activeGameObject))
+            CheckSelectedComponentState();
+        }
+
+        private void DisplayTitle()
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginHorizontal();
+
+            GUILayout.Label(titleLabel, EditorStyles.boldLabel);
+
+            if (!locked)
             {
-                ClearSelectedComponents();
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(GenerateBuildCacheButtonText()))
+                {
+                    selectedHistory.Clear();
+                    ClearSelectedComponents();
+                    BuildCache();
+                }
             }
-            selectedGameObejct = Selection.activeGameObject;
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private string GenerateBuildCacheButtonText()
+        {
+            return (cache.Count == 0 ? cacheButtonEmptyText : cacheButtonNotEmptyText) + cacheButtonText;
+        }
+
+        private void DisplayAvailableComponents()
+        {
+            selectedComponentIndex = EditorGUILayout.Popup(componentsPopupLabel, selectedComponentIndex, selectedComponents.ToArray());
+
+            if (!selectedComponentIndex.Equals(lastSelectedIndex))
+            {
+                foundCallers.Clear();
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel(" ");
+            if (GUILayout.Button(findEventsButton))
+            {
+                foundCallers = GetAllCallingComponents(backingSelectedComponents[selectedComponentIndex]);
+            }
+            EditorGUILayout.EndHorizontal();
+
+            lastSelectedIndex = selectedComponentIndex;
+        }
+
+        private void DisplayEventSources()
+        {
+            GUILayout.Label(eventSourcesLabel, EditorStyles.boldLabel);
+            if (foundCallers.Count == 0)
+            {
+                EditorGUILayout.HelpBox(noSourcesFoundText, MessageType.Info);
+            }
+            else
+            {
+                GUILayout.BeginVertical("", "box");
+                foreach (Component component in foundCallers)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(component.GetType().Name + highlightLabelSeperator + component.name, new GUIStyle() { wordWrap = true });
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button(highlightButtonContent))
+                    {
+                        if (!IsCurrentSelectionLatestHistoryItem())
+                        {
+                            selectedHistory.Add(selectedGameObejct);
+                        }
+                        EditorGUIUtility.PingObject(component.gameObject);
+                    }
+                    GUILayout.EndHorizontal();
+                    EditorHelper.DrawHorizontalLine();
+                }
+                GUILayout.EndVertical();
+            }
+        }
+
+        private bool IsCurrentSelectionLatestHistoryItem()
+        {
+            return selectedHistory.Count - 1 >= 0 && selectedHistory[selectedHistory.Count - 1] == selectedGameObejct;
+        }
+
+        private void DisplaySelectionHistory()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(selectionHistoryLabel, EditorStyles.boldLabel);
+            if (selectedHistory.Count > 0)
+            {
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(clearSelectionHistoryButton))
+                {
+                    selectedHistory.Clear();
+                }
+            }
+            GUILayout.EndHorizontal();
+
+            if (selectedHistory.Count > 0)
+            {
+                EditorGUILayout.Space();
+                EditorGUI.BeginDisabledGroup(true);
+                foreach (GameObject historyObject in selectedHistory)
+                {
+                    EditorGUILayout.ObjectField(historyObject, historyObject.GetType(), true);
+                }
+                EditorGUI.EndDisabledGroup();
+                EditorGUILayout.Space();
+            }
+            else
+            {
+                EditorGUILayout.HelpBox(noHistoryFoundText, MessageType.Info);
+            }
+        }
+
+        private void CheckSelectedComponentState()
+        {
+            if (!locked)
+            {
+                if (selectedGameObejct == null || !selectedGameObejct.Equals(Selection.activeGameObject))
+                {
+                    ClearSelectedComponents();
+                }
+                selectedGameObejct = Selection.activeGameObject;
+            }
         }
 
         private List<Object> GetAllCallingComponents(Object target)
@@ -124,7 +238,7 @@
             obj.GetComponents(components);
 
             backingSelectedComponents.Add(obj);
-            selectedComponents.Add(ObjectNames.NicifyVariableName("GameObject (" + obj.name + ")"));
+            selectedComponents.Add(ObjectNames.NicifyVariableName(gameObjectText + " (" + obj.name + ")"));
             foreach (Component component in components)
             {
                 backingSelectedComponents.Add(component);
@@ -210,11 +324,28 @@
             }
         }
 
-        [MenuItem("Window/Tilia/DeveloperTools/" + windowTitle)]
+        private void ShowButton(Rect position)
+        {
+            if (lockButtonStyle == null)
+            {
+                lockButtonStyle = "IN LockButton";
+            }
+            locked = GUI.Toggle(position, locked, GUIContent.none, lockButtonStyle);
+        }
+
+        [MenuItem(windowPath + windowTitle)]
         private static void ShowWindow()
         {
-            promptWindow = EditorWindow.GetWindow(typeof(UnityEventSourceTracer));
+            promptWindow = GetWindow(typeof(UnityEventSourceTracer));
             promptWindow.titleContent = new GUIContent(windowTitle);
+        }
+
+        void IHasCustomMenu.AddItemsToMenu(GenericMenu menu)
+        {
+            menu.AddItem(new GUIContent("Lock"), locked, () =>
+            {
+                locked = !locked;
+            });
         }
     }
 }
