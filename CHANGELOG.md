@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.0](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/compare/v1.2.0...v1.3.0) (2022-03-10)
+
+#### Features
+
+* **Event:** add target history list and lock option ([e78d64e](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/commit/e78d64ed3692cfb784c285d7fa8a6aa8f4a0d3d9))
+  > The Target History list shows a list of previously selected targets to make it easier to go forward through the chain as well as back.
+  > 
+  > The window can now also be locked to prevent the contents from changing when selecting another GameObject.
+  > 
+  > A general code tidy up has been applied too.
+
 ## [1.2.0](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/compare/v1.1.16...v1.2.0) (2022-03-02)
 
 #### Features
