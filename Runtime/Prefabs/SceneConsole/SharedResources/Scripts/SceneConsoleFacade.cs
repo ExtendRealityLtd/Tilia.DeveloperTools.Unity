@@ -1,13 +1,11 @@
 ﻿namespace Tilia.DeveloperTools.SceneConsole
 {
-    using Malimbe.MemberChangeMethod;
-    using Malimbe.PropertySerializationAttribute;
-    using Malimbe.XmlDocumentationAttribute;
     using System;
     using System.Text.RegularExpressions;
     using UnityEngine;
     using UnityEngine.UI;
     using Zinnia.Data.Attribute;
+    using Zinnia.Extension;
 
     /// <summary>
     /// The public interface into the SceneConsole Prefab.
@@ -15,87 +13,245 @@
     public class SceneConsoleFacade : MonoBehaviour
     {
         #region Console Settings
+        [Header("Console Settings")]
+        [Tooltip("The size of the font the log text is displayed in.")]
+        [SerializeField]
+        private int fontSize = 10;
         /// <summary>
         /// The size of the font the log text is displayed in.
         /// </summary>
-        [Serialized]
-        [field: Header("Console Settings"), DocumentedByXml]
-        public int FontSize { get; set; } = 10;
+        public int FontSize
+        {
+            get
+            {
+                return fontSize;
+            }
+            set
+            {
+                fontSize = value;
+            }
+        }
+        [Tooltip("The Color of the text for an info log message.")]
+        [SerializeField]
+        private Color infoMessage = Color.black;
         /// <summary>
         /// The <see cref="Color"/> of the text for an info log message.
         /// </summary>
-        [Serialized]
-        [field: DocumentedByXml]
-        public Color InfoMessage { get; set; } = Color.black;
+        public Color InfoMessage
+        {
+            get
+            {
+                return infoMessage;
+            }
+            set
+            {
+                infoMessage = value;
+            }
+        }
+        [Tooltip("The Color of the text for an assertion log message.")]
+        [SerializeField]
+        private Color assertMessage = Color.black;
         /// <summary>
         /// The <see cref="Color"/> of the text for an assertion log message.
         /// </summary>
-        [Serialized]
-        [field: DocumentedByXml]
-        public Color AssertMessage { get; set; } = Color.black;
+        public Color AssertMessage
+        {
+            get
+            {
+                return assertMessage;
+            }
+            set
+            {
+                assertMessage = value;
+            }
+        }
+        [Tooltip("The Color of the text for a warning log message.")]
+        [SerializeField]
+        private Color warningMessage = Color.yellow;
         /// <summary>
         /// The <see cref="Color"/> of the text for a warning log message.
         /// </summary>
-        [Serialized]
-        [field: DocumentedByXml]
-        public Color WarningMessage { get; set; } = Color.yellow;
+        public Color WarningMessage
+        {
+            get
+            {
+                return warningMessage;
+            }
+            set
+            {
+                warningMessage = value;
+            }
+        }
+        [Tooltip("The Color of the text for an error log message.")]
+        [SerializeField]
+        private Color errorMessage = Color.red;
         /// <summary>
         /// The <see cref="Color"/> of the text for an error log message.
         /// </summary>
-        [Serialized]
-        [field: DocumentedByXml]
-        public Color ErrorMessage { get; set; } = Color.red;
+        public Color ErrorMessage
+        {
+            get
+            {
+                return errorMessage;
+            }
+            set
+            {
+                errorMessage = value;
+            }
+        }
+        [Tooltip("The Color of the text for an exception log message.")]
+        [SerializeField]
+        private Color exceptionMessage = Color.red;
         /// <summary>
         /// The <see cref="Color"/> of the text for an exception log message.
         /// </summary>
-        [Serialized]
-        [field: DocumentedByXml]
-        public Color ExceptionMessage { get; set; } = Color.red;
+        public Color ExceptionMessage
+        {
+            get
+            {
+                return exceptionMessage;
+            }
+            set
+            {
+                exceptionMessage = value;
+            }
+        }
+        [Tooltip("The Color of the text when counting collapsed messages.")]
+        [SerializeField]
+        [Restricted(RestrictedAttribute.Restrictions.ReadOnlyAtRunTimeAndEnabled)]
+        private Color collapseCounter = Color.white;
         /// <summary>
         /// The <see cref="Color"/> of the text when counting collapsed messages.
         /// </summary>
-        [Serialized]
-        [field: DocumentedByXml, Restricted(RestrictedAttribute.Restrictions.ReadOnlyAtRunTimeAndEnabled)]
-        public Color CollapseCounter { get; set; } = Color.white;
+        public Color CollapseCounter
+        {
+            get
+            {
+                return collapseCounter;
+            }
+            set
+            {
+                collapseCounter = value;
+                if (this.IsMemberChangeAllowed())
+                {
+                    OnAfterCollapseCounterChange();
+                }
+            }
+        }
+        [Tooltip("Determines whether to collapse same messages into one message in the log.")]
+        [SerializeField]
+        private bool collapseLog;
         /// <summary>
         /// Determines whether to collapse same messages into one message in the log.
         /// </summary>
-        [Serialized]
-        [field: DocumentedByXml]
-        public bool CollapseLog { get; set; }
+        public bool CollapseLog
+        {
+            get
+            {
+                return collapseLog;
+            }
+            set
+            {
+                collapseLog = value;
+                if (this.IsMemberChangeAllowed())
+                {
+                    OnAfterCollapseLogChange();
+                }
+            }
+        }
+        [Tooltip("The string to use as a log line separator.")]
+        [SerializeField]
+        private string lineSeparator = "---------------";
         /// <summary>
         /// The <see cref="string"/> to use as a log line separator.
         /// </summary>
-        [Serialized]
-        [field: DocumentedByXml]
-        public string LineSeparator { get; set; } = "---------------";
+        public string LineSeparator
+        {
+            get
+            {
+                return lineSeparator;
+            }
+            set
+            {
+                lineSeparator = value;
+            }
+        }
         #endregion
 
         #region Reference Settings
+        [Header("Reference Settings")]
+        [Tooltip("The console scrollable ScrollRect area.")]
+        [SerializeField]
+        [Restricted]
+        private ScrollRect scrollWindow;
         /// <summary>
         /// The console scrollable <see cref="ScrollRect"/> area.
         /// </summary>
-        [Serialized]
-        [field: Header("Reference Settings"), DocumentedByXml, Restricted]
-        public ScrollRect ScrollWindow { get; protected set; }
+        public ScrollRect ScrollWindow
+        {
+            get
+            {
+                return scrollWindow;
+            }
+            protected set
+            {
+                scrollWindow = value;
+            }
+        }
+        [Tooltip("The output content RectTransform.")]
+        [SerializeField]
+        [Restricted]
+        private RectTransform consoleRect;
         /// <summary>
         /// The output content <see cref="RectTransform"/>.
         /// </summary>
-        [Serialized]
-        [field: DocumentedByXml, Restricted]
-        public RectTransform ConsoleRect { get; protected set; }
+        public RectTransform ConsoleRect
+        {
+            get
+            {
+                return consoleRect;
+            }
+            protected set
+            {
+                consoleRect = value;
+            }
+        }
+        [Tooltip("The Text element to output the console to.")]
+        [SerializeField]
+        [Restricted]
+        private Text consoleOutput;
         /// <summary>
         /// The <see cref="Text "/> element to output the console to.
         /// </summary>
-        [Serialized]
-        [field: DocumentedByXml, Restricted]
-        public Text ConsoleOutput { get; protected set; }
+        public Text ConsoleOutput
+        {
+            get
+            {
+                return consoleOutput;
+            }
+            protected set
+            {
+                consoleOutput = value;
+            }
+        }
+        [Tooltip("The GameObject that holds the checkmark for the collapse state.")]
+        [SerializeField]
+        [Restricted]
+        private GameObject collapseCheckMark;
         /// <summary>
         /// The <see cref="GameObject "/> that holds the checkmark for the collapse state.
         /// </summary>
-        [Serialized]
-        [field: DocumentedByXml, Restricted]
-        public GameObject CollapseCheckMark { get; protected set; }
+        public GameObject CollapseCheckMark
+        {
+            get
+            {
+                return collapseCheckMark;
+            }
+            protected set
+            {
+                collapseCheckMark = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -280,23 +436,21 @@
         }
 
         /// <summary>
-        /// Called after <see cref="CollapseLog"/> has been changed.
-        /// </summary>
-        [CalledAfterChangeOf(nameof(CollapseLog))]
-        protected virtual void OnAfterCollapseLogChange()
-        {
-            CollapseCheckMark.SetActive(CollapseLog);
-        }
-
-        /// <summary>
         /// Called after <see cref="CollapseCounter"/> has been changed.
         /// </summary>
-        [CalledAfterChangeOf(nameof(CollapseCounter))]
         protected virtual void OnAfterCollapseCounterChange()
         {
             collapseCounterColorString = ColorUtility.ToHtmlStringRGBA(CollapseCounter);
             collapseCounterDefaultInsertValue = $"<color=#{collapseCounterColorString}>({collapseCountMaskCharacter})</color>";
             collapseCounterPattern = new Regex($"^<color=#{collapseCounterColorString}>\\((\\d+)\\)</color>(.*)");
+        }
+
+        /// <summary>
+        /// Called after <see cref="CollapseLog"/> has been changed.
+        /// </summary>
+        protected virtual void OnAfterCollapseLogChange()
+        {
+            CollapseCheckMark.SetActive(CollapseLog);
         }
     }
 }
