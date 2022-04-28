@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.0](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/compare/v1.3.2...v2.0.0) (2022-04-28)
+
+#### :warning: BREAKING CHANGES :warning:
+
+* **Malimbe:** This removes the last remaining elements of Malimbe and whilst it does not cause any breaking changes within this package, it removes Malimbe as a dependency which other projects that rely on this package may piggy back off this Malimbe dependency so it will break any project like that.
+
+All of the previous functionality from Malimbe has been replicated in standard code without the need for it to be weaved by the Malimbe helper tags. ([dc55425](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/commit/dc55425e850d535d7c467ecf432f1db3b29856f8))
+
+#### Features
+
+* **Malimbe:** remove malimbe dependency ([dc55425](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/commit/dc55425e850d535d7c467ecf432f1db3b29856f8))
+
 ### [1.3.2](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/compare/v1.3.1...v1.3.2) (2022-03-15)
 
 #### Miscellaneous Chores
