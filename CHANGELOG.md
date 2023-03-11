@@ -1,5 +1,12 @@
 # Changelog
 
+### [2.0.8](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/compare/v2.0.7...v2.0.8) (2023-03-11)
+
+#### Miscellaneous Chores
+
+* **deps:** bump io.extendreality.zinnia.unity from 2.6.0 to 2.7.0 ([7fe9a69](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/commit/7fe9a6921598a647810949bbaed45fc1cd9c4d79))
+  > Bumps [io.extendreality.zinnia.unity](https://github.com/ExtendRealityLtd/Zinnia.Unity) from 2.6.0 to 2.7.0. - [Release notes](https://github.com/ExtendRealityLtd/Zinnia.Unity/releases) - [Changelog](https://github.com/ExtendRealityLtd/Zinnia.Unity/blob/master/CHANGELOG.md) - [Commits](https://github.com/ExtendRealityLtd/Zinnia.Unity/compare/v2.6.0...v2.7.0)
+
 ### [2.0.7](https://github.com/ExtendRealityLtd/Tilia.DeveloperTools.Unity/compare/v2.0.6...v2.0.7) (2023-02-22)
 
 #### Miscellaneous Chores
